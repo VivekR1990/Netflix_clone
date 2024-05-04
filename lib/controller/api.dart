@@ -7,26 +7,35 @@ import 'package:netflix_clone/models/movies.dart';
 class Api {
   static const _trendingUrl =
       "https://api.themoviedb.org/3/trending/movie/day?api_key=$apiKey";
-  Future<List<Movie>> getTrendingMovies() async {
-    final response = await http.get(Uri.parse(_trendingUrl));
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body)["results"] as List;
-      return responseData.map((movie) => Movie.fromJson(movie)).toList();
-    } else {
-      throw Exception('Something went wrong');
+  Future<List<Movie>> getTrendingMovies() async {
+    try {
+      final response = await http.get(Uri.parse(_trendingUrl));
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body)["results"] as List;
+        return responseData.map((movie) => Movie.fromJson(movie)).toList();
+      } else {
+        throw Exception('Failed to load trending movies');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch trending movies: $e');
     }
   }
 
   Future<List<String>> getDownloadImageUrls() async {
-    final response = await http.get(Uri.parse(_trendingUrl));
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body)["results"] as List;
-      return responseData
-          .map((movie) => Movie.fromJson(movie).posterPath)
-          .toList();
-    } else {
-      throw Exception('Something went wrong');
+    try {
+      final response = await http.get(Uri.parse(_trendingUrl));
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body)["results"] as List;
+        return responseData
+            .map((movie) => Movie.fromJson(movie).posterPath)
+            .toList();
+      } else {
+        throw Exception('Failed to download image URLs');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch image URLs: $e');
     }
   }
 
